@@ -1,0 +1,22 @@
+.grilla {
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+  
+  width: 75vh;
+  height: 75vh;
+}
+
+@media (max-width: 500px) {
+  .grilla {
+    width: 75vw;
+    height: 75vw;
+  }
+}
+
+
+.fila {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}

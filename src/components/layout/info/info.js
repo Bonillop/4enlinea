@@ -16,6 +16,12 @@ const info = props => {
           <button onClick={() => props.reiniciarJuego()}>reiniciar</button>
         </div>
       ) : null}
+      {props.sinMovimientos ? (
+        <div>
+        <h2>No quedan movimientos posibles</h2>
+        <button onClick={() => props.reiniciarJuego()}>reiniciar</button>
+      </div>
+      ): null}
     </div>
   );
 };

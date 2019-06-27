@@ -35,6 +35,7 @@ class Layout extends Component {
     nuevoEstado.ganador = "";
     nuevoEstado.whiteTurn = true;
     nuevoEstado.estadosCeldas.fill(0);
+    nuevoEstado.sinMovimientos = false;
     this.setState(nuevoEstado);
   };
 
@@ -76,7 +77,6 @@ class Layout extends Component {
 
   handleClick = (fila, columna) => {
     if (!this.state.hayGanador) {
-      console.time("pepe");
       this.ponerFicha(this.getArrayIndex(fila, columna));
     }
   };
@@ -102,6 +102,9 @@ class Layout extends Component {
           whiteTurn: siguienteTurno
         });
 
+        let audio = new Audio('assets/ficha.wav');
+        audio.play();
+
         if (this.hayGanador(nuevoEstado, arrayIndex)) {
           let ganador;
           if (turnoActual) {
@@ -109,12 +112,19 @@ class Layout extends Component {
           } else {
             ganador = "Negro";
           }
+          let winAudio = new Audio('assets/win.flac');
+          winAudio.play();
           this.setState({ hayGanador: true, ganador: ganador });
         }
-        console.timeEnd("pepe");
+        
       }
     }
   };
+
+  //Recibe un indice dentro del array y devuelve la fila que le corresponde
+  getFila(arrayIndex){
+    return Math.floor(arrayIndex / this.state.numColumnas);
+  }
 
   checkDerecha(nuevoEstado, arrayIndex) {
     /**
@@ -124,8 +134,8 @@ class Layout extends Component {
      */ 
     if (
       nuevoEstado[+arrayIndex] === nuevoEstado[+arrayIndex + 3] &&
-      Math.floor(+arrayIndex / this.state.numColumnas) ===
-        Math.floor((+arrayIndex + 3) / this.state.numColumnas)
+      this.getFila(+arrayIndex) ===
+        this.getFila(+arrayIndex + 3)
     ) {
       if (
         nuevoEstado[+arrayIndex] === nuevoEstado[+arrayIndex + 2] &&
@@ -137,11 +147,13 @@ class Layout extends Component {
     return false;
   }
 
+  
+
   checkAbajoDerecha(nuevoEstado, arrayIndex, offset) {
     if (
       nuevoEstado[+arrayIndex] === nuevoEstado[+arrayIndex + offset * 3 + 3] &&
-      Math.floor(+arrayIndex / this.state.numColumnas) ===
-        Math.floor((+arrayIndex + offset * 3 + 3) /this.state.numColumnas) - 3
+      this.getFila(+arrayIndex) ===
+        this.getFila(arrayIndex + offset * 3 + 3) - 3
     ) {
       if (
         nuevoEstado[+arrayIndex] ===
@@ -169,8 +181,8 @@ class Layout extends Component {
   checkAbajoIzquierda(nuevoEstado, arrayIndex, offset) {
     if (
       nuevoEstado[+arrayIndex] === nuevoEstado[+arrayIndex + offset * 3 - 3] &&
-      Math.floor(+arrayIndex / this.state.numColumnas) ===
-      Math.floor((+arrayIndex + offset * 3 - 3) /this.state.numColumnas) - 3
+      this.getFila(+arrayIndex) ===
+      this.getFila(+arrayIndex + offset * 3 - 3) - 3
     ) {
       if (
         nuevoEstado[+arrayIndex] ===
@@ -185,9 +197,8 @@ class Layout extends Component {
 
   hayGanador = (nuevoEstado, arrayIndex) => {
     let offset = this.state.numColumnas;
-    // let valorFicha = nuevoEstado[arrayIndex];
-    // let existencias = 0;
 
+    //for IN devuelve los indices en la variable definida, for OF devuelve los valores en la variable definida
     for (let arrayIndex in nuevoEstado) {
       if (nuevoEstado[+arrayIndex] !== 0) {
         if (
@@ -214,6 +225,7 @@ class Layout extends Component {
           hayGanador={this.state.hayGanador}
           ganador={this.state.ganador}
           reiniciarJuego={this.reiniciarJuego}
+          sinMovimientos={this.state.sinMovimientos}
         />
         {grillas.map((value, index) => {
           return (
